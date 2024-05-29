@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>&#127929;条形码生成器</title>
+</head>
+
+<body>
+    <h1>条形码生成器</h1>
+    <form id="barcodeForm">
+        <label for="startBarcode">开始条形码:</label>
+        <input type="text" id="startBarcode" name="startBarcode" pattern="[0-9]{1,50}" title="请输入1至50位数字"><br><br>
+        <label for="endBarcode">结束条形码:</label>
+        <input type="text" id="endBarcode" name="endBarcode" pattern="[0-9]{1,50}" title="请输入1至50位数字"><br><br>
+        <button type="button" onclick="generateBarcodes()">生成条形码</button>
+        <button type="button" onclick="copyToClipboard()">复制</button>
+        <button type="button" onclick="clearBarcodes()">清空</button>
+    </form>
+
+    <div id="resultContainer">
+        <h2>生成的条形码:</h2>
+        <textarea id="barcodeList" rows="15" cols="50"></textarea>
+    </div>
+
+    <script>
+        // 生成条形码
+        function generateBarcodes() {
+            const startBarcode = document.getElementById('startBarcode').value;
+            const endBarcode = document.getElementById('endBarcode').value;
+            const barcodeList = document.getElementById('barcodeList');
+
+            // 清空之前的结果
+            barcodeList.value = '';
+
+            // 检查输入是否合法
+            if (!startBarcode.match(/^\d{1,50}$/) || !endBarcode.match(/^\d{1,50}$/)) {
+                alert('请输入1至50位数字的开始和结束条形码！');
+                return;
+            }
+
+            // 提取前缀和后缀
+            const prefix = startBarcode.substring(0, startBarcode.length - 6); // 获取前缀
+            const startSuffix = parseInt(startBarcode.substring(startBarcode.length - 6));
+            const endSuffix = parseInt(endBarcode.substring(endBarcode.length - 6));
+
+            // 生成所有条形码并显示
+            for (let i = startSuffix; i <= endSuffix; i++) {
+                const barcode = prefix + ('000000' + i).slice(-6); // 使用 slice 确保后缀是 6 位数
+                barcodeList.value += barcode + '\n';
+            }
+        }
+
+        // 清空结果
+        function clearBarcodes() {
+            document.getElementById('barcodeList').value = '';
+        }
+
+        // 复制结果到剪贴板
+        function copyToClipboard() {
+            const barcodeList = document.getElementById('barcodeList');
+            barcodeList.select();
+            document.execCommand('copy');
+        }
+    </script>
+</body>
+
+</html>
