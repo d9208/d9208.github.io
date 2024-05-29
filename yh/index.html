@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL加引号</title>
+    <style>
+        /* 样式定义 */
+        body {
+            background-color: #F5F5F5;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 36px;
+            color: #00BFFF;
+            margin-bottom: 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-container button {
+            background: linear-gradient(to right, #00BFFF, #87CEFA);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 20px;
+            transition: background 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-container button:last-child {
+            margin-right: 0;
+        }
+
+        .btn-container button:hover {
+            background: linear-gradient(to right, #87CEFA, #00BFFF);
+        }
+
+        .btn-container button:active {
+            transform: translateY(2px);
+        }
+
+        .input-container textarea {
+            width: 100%;
+            border: none;
+            font-size: 18px;
+            line-height: 1.5;
+            padding: 10px;
+            box-sizing: border-box;
+            border-radius: 4px;
+            resize: vertical;
+            overflow: auto;
+            transition: box-shadow 0.3s ease;
+            font-family: Arial, sans-serif;
+            background-color: #F5F5F5;
+            color: #696969;
+            box-shadow: 0 0 10px rgba(105,105,105,0.2);
+        }
+
+        .input-container textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00BFFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <div class="title">
+            <h3>SQL加引号</h3>
+        </div>
+
+        <!-- 按钮区域 -->
+        <div class="btn-container">
+            <button id="btn1">添加引号</button>
+            <button id="btn2">复制</button>
+            <button id="btn3">删除空行</button>
+            <button id="btn4">一行显示</button>
+            <button id="btn5">撤销</button>
+            <button id="btn6">清空</button>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="input-container">
+            <textarea id="myText" rows="8" placeholder="请输入待处理的内容"></textarea>
+        </div>
+    </div>
+
+    <script>
+        var myText = document.getElementById("myText");
+        var prevValues = [];
+        var currentIndex = -1;
+
+        function savePrevValue(value) {
+            prevValues.push(value);
+            currentIndex++;
+        }
+
+        function updatePrevValue(value) {
+            prevValues[currentIndex] = value;
+        }
+
+        function undo() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                myText.value = prevValues[currentIndex];
+                adjustTextareaHeight();
+            }
+        }
+
+        document.getElementById("btn1").addEventListener('click', function() {
+            savePrevValue(myText.value);
+            var lines = myText.value.split('\n').filter(line => line.trim() !== '');
+            myText.value = lines.map(line => "'" + line.trim() + "'").join(',\n');
+            adjustTextareaHeight();
+        });
+
+        document.getElementById("btn2").addEventListener('click', function() {
+            myText.select();
+            document.execCommand("copy");
+        });
+
+        document.getElementById("btn3").addEventListener('click', function() {
+            savePrevValue(myText.value);
+            myText.value = myText.value.replace(/^\s*[\r\n]/gm, '');
+            adjustTextareaHeight();
+        });
+
+        document.getElementById("btn4").addEventListener('click', function() {
+            savePrevValue(myText.value);
+            myText.value = myText.value.replace(/[\r\n]+/g, ' ');
+            adjustTextareaHeight();
+        });
+
+        document.getElementById("btn5").addEventListener('click', function() {
+            undo();
+        });
+        
+        document.getElementById("btn6").addEventListener('click', function() {
+            savePrevValue(myText.value);
+            myText.value = "";
+            adjustTextareaHeight();
+        });
+        
+        function adjustTextareaHeight() {
+            myText.style.height = 'auto';
+            myText.style.height = myText.scrollHeight + 'px';
+        }
+
+        myText.addEventListener('input', function() {
+            updatePrevValue(myText.value);
+            adjustTextareaHeight();
+        });
+    </script>
+</body>
+</html>
